@@ -1,7 +1,7 @@
 version: '3'
 services:
   web:
-      build: .
+      build: ./Dockerfile
       container_name: great
       volumes:
       - .:/code
