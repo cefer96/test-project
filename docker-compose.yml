@@ -15,7 +15,6 @@ services:
       build: nginx/nginx.conf/
       volumes:
         - ./nginx.conf/:/etc/nginx.conf/conf.d
-        - ./logs/:/code/logs
         - static:/code/static_cdn
         - media:/code/media_cdn
       ports:
