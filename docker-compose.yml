@@ -1,20 +1,38 @@
 version: '3'
 services:
+
   web:
+
       build: .
       container_name: great
       volumes:
       - .:/code
       - static:/code/static_cdn
       - media:/code/media_cdn
+      depends_on:
+          - postgres
       expose:
         - 8080
       command: bash -c "python manage.py collectstatic --no-input && python manage.py makemigrations && python manage.py migrate && gunicorn --workers=3 projectname.wsgi -b 0.0.0.0:8080"
+
+  postgres:
+      build: ./postgres
+      restart: unless-stopped
+      expose:
+        - "5432"
+      environment:   # will be used by the init script
+            LC_ALL: C.UTF-8
+            POSTGRES_USER: myuser
+            POSTGRES_PASSWORD: mypassowrd.
+            POSTGRES_DB: mydb
+      volumes:
+          - pgdata:/var/lib/postgresql/data/
+
   nginx:
       restart: always
-      build: nginx/nginx.conf/
+      build: ./nginx/
       volumes:
-        - ./nginx.conf/:/etc/nginx.conf/conf.d
+        - ./nginx/:/etc/nginx/conf.d
         - static:/code/static_cdn
         - media:/code/media_cdn
       ports:
