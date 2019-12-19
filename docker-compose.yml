@@ -1,16 +1,27 @@
-version: "3"
+version: '3'
 services:
-  # Base nginx configuration for all projects 
-  nginx-proxy:
-    image: jwilder/nginx-proxy
-    container_name: nginx-proxy
-    restart: always
-    ports:
-      - "80:80"
-    volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
-      - ./nginx.conf:/etc/nginx/nginx.conf
-networks:
-  default:
-    external:
-      name: nginx-proxy
+  web:
+      build: .
+      container_name: great
+      volumes:
+      - .:/code
+      - static:/code/static_cdn
+      - media:/code/media_cdn
+      expose:
+        - 8080
+      command: bash -c "python manage.py collectstatic --no-input && python manage.py makemigrations && python manage.py migrate && gunicorn --workers=3 projectname.wsgi -b 0.0.0.0:8080"
+  nginx:
+      restart: always
+      build: nginx/nginx.conf/
+      volumes:
+        - ./nginx.conf/:/etc/nginx.conf/conf.d
+        - static:/code/static_cdn
+        - media:/code/media_cdn
+      ports:
+        - "1221:80"
+      links:
+        - web
+volumes:
+  pgdata:
+  media:
+  static:
