@@ -11,7 +11,7 @@ services:
       - media:/code/media_cdn
       expose:
         - 8080
-      command: bash -c "python manage.py collectstatic --no-input && python manage.py makemigrations && python manage.py migrate && gunicorn --workers=3 projectname.wsgi -b 0.0.0.0:8080"
+      command: bash -c "python manage.py collectstatic --no-input && python manage.py makemigrations && python manage.py migrate && gunicorn --workers=3 blog.wsgi -b 0.0.0.0:8080"
 
 
   nginx:
@@ -19,6 +19,7 @@ services:
       build: ./nginx/
       volumes:
         - ./nginx/:/etc/nginx/conf.d
+        - ./logs/:/code/logs
         - static:/code/static_cdn
         - media:/code/media_cdn
       ports:
