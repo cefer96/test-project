@@ -12,9 +12,9 @@ services:
       command: bash -c "python manage.py collectstatic --no-input && python manage.py makemigrations && python manage.py migrate && gunicorn --workers=3 projectname.wsgi -b 0.0.0.0:8080"
   nginx:
       restart: always
-      build: ./nginx/
+      build: nginx.conf/
       volumes:
-        - ./nginx/:/etc/nginx/conf.d
+        - ./nginx.conf/:/etc/nginx.conf/conf.d
         - ./logs/:/code/logs
         - static:/code/static_cdn
         - media:/code/media_cdn
